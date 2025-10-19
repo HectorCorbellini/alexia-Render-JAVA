@@ -28,55 +28,33 @@ public class AlexiaApplication {
     }
     
     /**
-     * Carga las variables de entorno desde archivo .env
-     * - En Render: carga desde /etc/secrets/.env (Secret Files)
-     * - En desarrollo local: carga desde .env en el directorio raíz
-     * - En otros entornos de producción: usa variables del sistema
+     * Loads environment variables based on the active profile.
+     * - Production (Render): Uses environment variables from Render dashboard
+     * - Development: Loads from .env file in project root
      */
     private static void loadEnvironmentVariables() {
         String profile = System.getenv("SPRING_PROFILES_ACTIVE");
         
-        // Intentar cargar desde /etc/secrets/.env (Render Secret Files)
-        java.io.File secretsEnv = new java.io.File("/etc/secrets/.env");
-        if (secretsEnv.exists()) {
-            try {
-                Dotenv dotenv = Dotenv.configure()
-                        .directory("/etc/secrets")
-                        .filename(".env")
-                        .ignoreIfMissing()
-                        .load();
-                
-                // Set as environment variables (not just system properties)
-                dotenv.entries().forEach(entry -> {
-                    setEnvironmentVariable(entry.getKey(), entry.getValue());
-                });
-                
-                System.out.println("✓ Variables de entorno cargadas desde /etc/secrets/.env (Render Secret File)");
-                return;
-            } catch (Exception e) {
-                System.err.println("⚠ No se pudo cargar /etc/secrets/.env: " + e.getMessage());
-                e.printStackTrace();
-            }
+        // In production, use Render's environment variables directly
+        if ("prod".equals(profile)) {
+            System.out.println("✓ Using environment variables from Render dashboard (production)");
+            return;
         }
         
-        // Solo cargar .env local en desarrollo (no en producción)
-        if (!"prod".equals(profile)) {
-            try {
-                Dotenv dotenv = Dotenv.configure()
-                        .filename(".env")
-                        .ignoreIfMissing()
-                        .load();
-                
-                dotenv.entries().forEach(entry -> {
-                    setEnvironmentVariable(entry.getKey(), entry.getValue());
-                });
-                
-                System.out.println("✓ Variables de entorno cargadas desde .env (development)");
-            } catch (Exception e) {
-                System.err.println("⚠ No se pudo cargar archivo .env: " + e.getMessage());
-            }
-        } else {
-            System.out.println("✓ Usando variables de entorno del sistema (production)");
+        // In development, load from .env file
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .filename(".env")
+                    .ignoreIfMissing()
+                    .load();
+            
+            dotenv.entries().forEach(entry -> {
+                setEnvironmentVariable(entry.getKey(), entry.getValue());
+            });
+            
+            System.out.println("✓ Loaded environment variables from .env file (development)");
+        } catch (Exception e) {
+            System.err.println("⚠ Could not load .env file: " + e.getMessage());
         }
     }
     
