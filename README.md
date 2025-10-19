@@ -2,32 +2,22 @@
 
 Asistente automatizado que ayuda a usuarios de WhatsApp y Telegram a encontrar negocios, productos y servicios locales usando IA y fuentes verificadas.
 
-## 🚀 Estado Actual: PASO 6 COMPLETADO ✅ - Integración con Grok AI
+## 🚀 Estado Actual: ✅ DESPLEGADO EN PRODUCCIÓN
 
-Este proyecto se está desarrollando de forma **incremental**, paso por paso, probando cada funcionalidad antes de continuar.
+**Aplicación en vivo**: Desplegada exitosamente en Render
 
-✅ **6 pasos completados de 10** (60% progreso)
+**Repositorio en GitHub**: [https://github.com/HectorCorbellini/alexia-Render-JAVA](https://github.com/HectorCorbellini/alexia-Render-JAVA)
 
-Ver el plan completo en: [PLAN_INCREMENTAL.md](PLAN_INCREMENTAL.md)
-
-## 📦 Código Fuente
-
-**Repositorio en GitHub**: [https://github.com/HectorCorbellini/AlexiaJavaRender](https://github.com/HectorCorbellini/AlexiaJavaRender)
-
-**Rama actual (Paso 6)**: `paso6-grok-ai-final`
+**Rama**: `main`
 
 ```bash
-# Clonar el proyecto (rama principal)
-git clone https://github.com/HectorCorbellini/AlexiaJavaRender.git
-cd AlexiaJavaRender
-
-# O clonar la rama del Paso 6 directamente
-git clone -b main https://github.com/HectorCorbellini/AlexiaJavaRender.git
-cd AlexiaJavaRender
+# Clonar el proyecto
+git clone https://github.com/HectorCorbellini/alexia-Render-JAVA.git
+cd alexia-Render-JAVA
 
 # Configurar variables de entorno para desarrollo local
 cp .env.example .env
-# Editar .env con tus credenciales (Supabase, Telegram, Groq)
+# Editar .env con tus credenciales
 
 # Compilar y ejecutar
 mvn clean compile
@@ -36,10 +26,17 @@ mvn spring-boot:run
 
 ## 📋 Requisitos
 
+### Para Desarrollo Local:
 - Java 17 o superior
 - Maven 3.6+
-- Cuenta de Supabase (PostgreSQL)
-- Token de Telegram Bot (ya configurado)
+- PostgreSQL (Supabase o local)
+- Token de Telegram Bot
+- API Key de Grok AI
+
+### Para Despliegue en Render:
+- Cuenta de GitHub
+- Cuenta de Render (gratuita)
+- PostgreSQL en Render (incluido en free tier)
 
 ## ⚙️ Configuración Inicial
 
@@ -92,72 +89,53 @@ mvn spring-boot:run
 http://localhost:8080
 ```
 
-## 🚀 Despliegue en Render (Automatizado)
+## 🚀 Despliegue en Render
 
-Este proyecto utiliza un enfoque automatizado y seguro para el despliegue en Render:
+**Estado**: ✅ Desplegado exitosamente
 
-### ✅ Características del Despliegue
+Este proyecto está configurado para despliegue automático en Render usando Docker.
 
-- **Docker**: Aplicación empaquetada automáticamente con multi-stage build
-- **Variables de entorno**: Configuración automática usando Render CLI
-- **Base de datos**: Conexión automática usando `DatabaseConfig.java`
-- **Telegram**: Eliminación automática de webhooks integrada
+### Características del Despliegue
 
-### 📋 Pasos de Despliegue
+- ✅ **Multi-stage Docker build** para imágenes optimizadas
+- ✅ **Vaadin production mode** con frontend pre-compilado
+- ✅ **PostgreSQL en Render** (red interna, alta velocidad)
+- ✅ **Variables de entorno** configuradas en Render dashboard
+- ✅ **Auto-deploy** desde GitHub
+- ✅ **Health checks** automáticos
 
-1. **Preparar entorno de Render**:
+### Guía Rápida de Despliegue
+
+1. **Push a GitHub**:
    ```bash
-   # Instalar Render CLI (si no lo tienes)
-   curl -fsSL https://raw.githubusercontent.com/render-oss/cli/refs/heads/main/bin/install.sh | sh
-
-   # Configurar API key de Render
-   export RENDER_API_KEY="rnd_tu_api_key_aqui"
+   git push origin main
    ```
 
-2. **Sincronizar variables de entorno**:
-   ```bash
-   # Ejecutar script de sincronización automática
-   ./scripts/sync_env.sh
+2. **Crear servicio en Render**:
+   - Dashboard → **New +** → **Web Service**
+   - Conectar repositorio: `HectorCorbellini/alexia-Render-JAVA`
+   - Render detecta automáticamente `Dockerfile` y `render.yaml`
+
+3. **Crear PostgreSQL Database**:
+   - Dashboard → **New +** → **PostgreSQL**
+   - Región: **Oregon** (misma que web service)
+   - Plan: **Free**
+
+4. **Configurar variables de entorno** en Render dashboard:
+   ```
+   DATABASE_URL=jdbc:postgresql://[host]/[database]
+   DATABASE_USER=[user]
+   DATABASE_PASSWORD=[password]
+   TELEGRAM_BOT_TOKEN=[token]
+   TELEGRAM_BOT_USERNAME=[username]
+   GROK_API_KEY=[api_key]
    ```
 
-3. **Crear servicio en Render**:
-   - Ve a [Render Dashboard](https://dashboard.render.com/)
-   - **New +** → **Web Service**
-   - Conecta repositorio: `HectorCorbellini/AlexiaJavaRender`
-   - Render detectará automáticamente `Dockerfile` y `render.yaml`
+5. **Deploy**: Render construye y despliega automáticamente (5-10 minutos)
 
-4. **Configurar variables adicionales en Render** (opcional):
-   ```bash
-   SPRING_PROFILES_ACTIVE=prod
-   DB_HOST=aws-0-us-west-1.pooler.supabase.com
-   DB_PORT=6543
-   DB_NAME=postgres
-   DB_USER=postgres.tu_proyecto
-   DB_PASSWORD=tu_password
-   TELEGRAM_BOT_TOKEN=tu_token
-   TELEGRAM_BOT_USERNAME=tu_bot_username
-   GROK_API_KEY=tu_api_key
-   ```
+### Documentación Completa
 
-5. **Desplegar**:
-   - Click en **Create Web Service**
-   - Esperar despliegue (5-10 minutos)
-   - Acceder a la URL proporcionada por Render
-
-### 🔧 Comandos de Despliegue
-
-```bash
-# Sincronizar variables de entorno con Render
-./scripts/sync_env.sh
-
-# Ver estado del servicio en Render
-render services
-
-# Ver logs del servicio
-render logs --service alexia-java-render
-```
-
-Ver [render/README.md](render/README.md) para documentación completa de despliegue.
+Ver [deployment/RENDER.md](deployment/RENDER.md) para instrucciones detalladas, troubleshooting y mejores prácticas.
 
 ## 📦 Tecnologías
 
@@ -394,13 +372,17 @@ El proyecto incluye configuración específica para cada entorno:
 
 ## 📚 Documentación
 
-- [Plan de Desarrollo Incremental](PLAN_INCREMENTAL.md)
-- [Registro de Cambios](CHANGELOG.md)
-- [Arquitectura Pendiente](ARQUITECTURA_PENDIENTE.md)
-- [Limpieza de Código Pendiente](LIMPIEZA_PENDIENTE.md)
+### Documentación del Proyecto
+- [Registro de Cambios](CHANGELOG.md) - Historial completo de desarrollo
+- [Plan de Desarrollo Incremental](PLAN_INCREMENTAL.md) - Roadmap del proyecto
+- [Guía de Despliegue en Render](deployment/RENDER.md) - Instrucciones detalladas
+- [Comparación de Plataformas](deployment/README_DEPLOY.md) - Por qué Render
+
+### Documentación Técnica
 - [Spring Boot Docs](https://spring.io/projects/spring-boot)
 - [Vaadin Docs](https://vaadin.com/docs)
 - [Telegram Bots API](https://core.telegram.org/bots/api)
+- [Groq API Docs](https://console.groq.com/docs)
 
 ## 🐛 Troubleshooting
 
@@ -435,64 +417,40 @@ sleep 30
 
 ## 🔐 Seguridad y Variables de Entorno
 
-### ✅ Estrategia de Seguridad Actualizada
-
-Este proyecto utiliza un enfoque moderno y seguro para manejar variables de entorno:
+### Estrategia de Seguridad
 
 #### **Producción (Render)**:
-- **Variables individuales**: Cada secreto se configura como variable de entorno independiente en Render
-- **Automatización**: El script `./scripts/sync_env.sh` sincroniza automáticamente las variables desde tu `.env.production` local
-- **Java automático**: `DatabaseConfig.java` construye la URL JDBC usando las variables del sistema
-- **Sin secretos en código**: Ningún secreto se guarda en el repositorio o imagen Docker
+- ✅ Variables configuradas directamente en Render dashboard
+- ✅ Spring Boot auto-configuración desde `application-prod.properties`
+- ✅ Sin secretos en código o repositorio
+- ✅ Variables inyectadas en tiempo de ejecución
 
 #### **Desarrollo Local**:
-- **Archivo .env**: Variables locales para desarrollo (excluido de Git)
-- **Carga automática**: `AlexiaApplication.java` carga automáticamente las variables locales
-- **Sin conflictos**: Las variables de producción no afectan el desarrollo local
+- ✅ Archivo `.env` para desarrollo (excluido de Git)
+- ✅ Carga automática con Dotenv Java
+- ✅ Separación completa de producción
 
-### 📝 Configuración Automatizada
+### Variables Requeridas
 
-#### **Paso 1: Configurar API Key de Render**
+**Para Render (configurar en dashboard)**:
 ```bash
-# Obtener API key desde: https://dashboard.render.com/account/api-keys
-export RENDER_API_KEY="rnd_tu_api_key_aqui"
+DATABASE_URL=jdbc:postgresql://[host]/[database]
+DATABASE_USER=[user]
+DATABASE_PASSWORD=[password]
+TELEGRAM_BOT_TOKEN=[token]
+TELEGRAM_BOT_USERNAME=[username]
+GROK_API_KEY=[api_key]
 ```
 
-#### **Paso 2: Sincronizar Variables**
+**Para desarrollo local (archivo `.env`)**:
 ```bash
-# Ejecutar sincronización automática
-./scripts/sync_env.sh
-
-# Esto lee tu .env.production local y configura todas las variables en Render
+SUPABASE_DB_URL=jdbc:postgresql://localhost:5432/alexia
+SUPABASE_DB_USER=postgres
+SUPABASE_DB_PASSWORD=your_password
+TELEGRAM_BOT_TOKEN=your_token
+TELEGRAM_BOT_USERNAME=your_bot
+GROK_API_KEY=your_key
 ```
-
-#### **Paso 3: Desplegar**
-- Render recibe las variables configuradas automáticamente
-- `DatabaseConfig.java` construye la conexión usando las variables del sistema
-- La aplicación se conecta sin necesidad de archivos .env
-
-### 🔒 Beneficios de Seguridad
-
-- ✅ **Sin secretos en GitHub**: `.env` archivos están excluidos del repositorio
-- ✅ **Sin secretos en Docker**: Variables se inyectan en tiempo de ejecución
-- ✅ **Auditoría completa**: Puedes ver todas las variables en el dashboard de Render
-- ✅ **Rotación fácil**: Cambiar secretos no requiere rebuild del contenedor
-- ✅ **Separación clara**: Variables de desarrollo vs producción completamente separadas
-
-### 📋 Verificación de Seguridad
-
-```bash
-# Verificar que no hay archivos .env en Git
-git status  # No debe mostrar archivos .env
-
-# Ver variables en Render (después de sincronizar)
-render env list --service tu-servicio
-
-# Ver logs para confirmar carga correcta
-render logs --service tu-servicio | grep -i "variables\|entorno"
-```
-
-Ver [render/ENV_STRATEGY_ANALYSIS.md](render/ENV_STRATEGY_ANALYSIS.md) para análisis detallado de estrategias de entorno.
 
 ## 🧪 Tests Unitarios
 
@@ -733,12 +691,13 @@ mvn clean install -DskipTests
 | 4 | ✅ | 2025-10-16 | Dashboard con logs de Telegram |
 | 5 | ✅ | 2025-10-16 | Comandos básicos del bot (/start, /help, /status) |
 | 6 | ✅ | 2025-10-16 | Integración con Grok AI (llama-3.1-8b-instant) |
-| 7 | ⏳ | Próximo | Dashboard de conversaciones IA |
-| 8 | ⏳ | Próximo | Integración con OpenAI (opcional) |
-| 9 | ⏳ | Próximo | Búsqueda por categoría |
-| 10 | ⏳ | Próximo | Dashboard con métricas |
+| 7 | ✅ | 2025-10-16 | Búsqueda de Negocios por Categoría |
+| **Deploy** | ✅ | **2025-10-19** | **Desplegado en Render con PostgreSQL** |
+| 8 | ⏳ | Próximo | Dashboard de conversaciones IA |
+| 9 | ⏳ | Próximo | Integración con OpenAI (opcional) |
+| 10 | ⏳ | Próximo | Dashboard con métricas avanzadas |
 
-**Progreso actual**: 6/10 pasos = **60% completado**
+**Progreso actual**: 7 pasos + Deploy = **Aplicación en producción** 🎉
 
 ## 📄 Licencia
 
@@ -747,7 +706,7 @@ Este proyecto es privado y está en desarrollo activo.
 ---
 
 **Versión**: 1.0.0  
-**Última actualización**: 2025-10-16  
-**Estado**: Paso 6 completado - Bot con Inteligencia Artificial (Grok AI)  
-**Rama actual**: `paso6-grok-ai-final`  
-**Próximo paso**: Paso 7 - Dashboard de Conversaciones IA
+**Última actualización**: 2025-10-19  
+**Estado**: ✅ Desplegado en Producción (Render)  
+**Repositorio**: [github.com/HectorCorbellini/alexia-Render-JAVA](https://github.com/HectorCorbellini/alexia-Render-JAVA)  
+**Rama**: `main`
